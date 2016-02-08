@@ -1,0 +1,29 @@
+{
+  "name": "yandex-metrika",
+  "version": "0.0.1",
+  "description": "Yandex Metrika service for angularjs",
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FriOne/angularjs-yandex-metrika.git"
+  },
+  "keywords": [
+    "yandex",
+    "metrika",
+    "angular",
+    "angularjs"
+  ],
+  "author": "Lyubimov Roman",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/FriOne/angularjs-yandex-metrika/issues"
+  },
+  "homepage": "https://github.com/FriOne/angularjs-yandex-metrika#readme",
+  "devDependencies": {
+    "browserify": "^13.0.0",
+    "gulp": "^3.9.0"
+  }
+}
