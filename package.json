@@ -1,6 +1,6 @@
 {
   "name": "angularjs-yandex-metrika",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Yandex Metrika service for angularjs",
   "main": "./dist/metrika.js",
   "repository": {

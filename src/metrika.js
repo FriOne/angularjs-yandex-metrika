@@ -50,7 +50,12 @@ function Metrika() {
   }
 
   function fireEvent(type) {
-    window[self.counterName].reachGoal(type);
+    if (window[self.counterName] && window[self.counterName].reachGoal) {
+      window[self.counterName].reachGoal(type);
+    }
+    else {
+      console.warn('Event with type [' + type + '] can\'t be fired because counter is still loading');
+    }
   }
 }
 Metrika.prototype = MetrikaPrototype;
