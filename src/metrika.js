@@ -1,25 +1,11 @@
-function MetrikaProvider() {
-  var counterConfig = {
-    clickmap: true,
-    trackLinks: true,
-    accurateTrackBounce: true,
-    webvisor: false,
-    trackHash: true,
-    ut: 'noindex'
-  };
-  var oauthToken;
-  return {
-    configureCounter: function (config) {
-      counterConfig = angular.extend(config, newConfig);
-    },
-    $get: function() {
-      return {
-        counterConfig: counterConfig,
-        oauthToken: oauthToken
-      };
-    }
-  };
-}
+var counterConfig = {
+  clickmap: true,
+  trackLinks: true,
+  accurateTrackBounce: true,
+  webvisor: false,
+  trackHash: true,
+  ut: 'noindex'
+};
 
 function MetrikaPrototype() {
   var self = this;
@@ -30,20 +16,23 @@ function MetrikaPrototype() {
 
 function Metrika() {
   var self = this;
-  if (!self.counterConfig.id) {
-    console.warn('You should provide counter id to use Yandex metrika counter');
+  self.counterName = 'yaCounter' + counterConfig.id;
+  self.$insertMetrika = insertMetrika;
+  if (!counterConfig.id) {
     return;
   }
-  self.counterName = 'yaCounter' + self.counterConfig.id;
   self.fireEvent = fireEvent;
-  insertMetrika();
 
   function insertMetrika() {
+    if (!counterConfig.id) {
+      console.warn('You should provide counter id to use Yandex metrika counter');
+      return;
+    }
     var name = 'yandex_metrika_callbacks';
     window[name] = window[name] || [];
     window[name].push(function() {
       try {
-        window[self.counterName] = new Ya.Metrika(self.counterConfig);
+        window[self.counterName] = new Ya.Metrika(counterConfig);
       } catch(e) {}
     });
 
@@ -66,6 +55,19 @@ function Metrika() {
 }
 Metrika.prototype = MetrikaPrototype;
 
+function MetrikaProvider() {
+  return {
+    configureCounter: function (config) {
+      angular.extend(counterConfig, config);
+    },
+    $get: function metrikaFactory() {
+      return new Metrika();
+    }
+  }
+}
+
 var module = angular.module('yandex-metrika', []);
-module.provider('metrika', MetrikaProvider);
-module.service('metrika', Metrika);
+module.provider('$metrika', MetrikaProvider);
+module.run(['$metrika', function($metrika) {
+  $metrika.$insertMetrika();
+}]);
