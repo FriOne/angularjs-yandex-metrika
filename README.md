@@ -18,7 +18,7 @@ CommonJS:
 Для настройки счетчика(как вы понимаете id обязателен):
 ```javascript
 function config($metrikaProvider) {
-    $metrikaProvider.configureCounter({id: 35231075, webvisor: true});
+    $metrikaProvider.configureCounter({id: 35567075, webvisor: true});
 }
 ```
 Для отправки javascript события:
