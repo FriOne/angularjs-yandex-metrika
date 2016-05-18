@@ -1,9 +1,9 @@
 # Angular Yandex Metrika
 Модуль добавляет на страницу счетчик яндекс метрики, с возможностью отправки javascipt событий.
 ```sh
-    npm install angularjs-yandex-metrika
+    npm install angularjs-yandex-metrika --save
 ```
-Чтобы подключить, нужно добавить скрипт в шаблон, либо подключить с помощью загрузчика модулей, и подключить модуль в приложение.
+Чтобы подключить, нужно добавить скрипт в шаблон, либо подключить с помощью загрузчика модулей, и подключить в приложение.
 CommonJS:
 ```javascript
     require('angularjs-yandex-metrika');
@@ -15,7 +15,7 @@ CommonJS:
 ```html
 <noscript><div><img src="https://mc.yandex.ru/watch/put_your_id_here" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
 ```
-Для настройки счетчика(как вы понимаете id обязателен):
+Для настройки счетчика(id обязателен):
 ```javascript
 function config($metrikaProvider) {
     $metrikaProvider.configureCounter({id: 35567075, webvisor: true});

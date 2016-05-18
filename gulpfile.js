@@ -1,5 +1,5 @@
-var gulp = require('gulp'),
-  uglify = require('gulp-uglify');
+var gulp = require('gulp');
+var uglify = require('gulp-uglify');
 
 gulp.task('minify', function compileLess() {
   return gulp.src('./src/metrika.js')
