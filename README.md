@@ -11,7 +11,7 @@ CommonJS:
 ```javascript
     var app = module('somApp', ['yandex-metrika']);
 ```
-Если вам нужено, чтобы счетчик работал без javascript, нужно добавить это:
+Если вам нужно, чтобы счетчик работал без javascript, нужно добавить это:
 ```html
 <noscript><div><img src="https://mc.yandex.ru/watch/put_your_id_here" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
 ```
@@ -27,4 +27,16 @@ function someCtrl($metrika) {
     // ...
     $metrika.fireEvent('some_event_name');
 }
+```
+Для отправки данных о просмотре страницы:
+```javascript
+app.run(['$rootScope', '$location', '$metrika', function ($rootScope, $location, $metrika) {
+    $rootScope.$on('$routeChangeSuccess', (event, next, current) => {
+        if (!current || !next || !current.$$route || !next.$$route) return;
+
+        $metrika.hit(next.$$route.originalPath, {
+            referer: current.$$route.originalPath
+        });
+    });
+}])
 ```
