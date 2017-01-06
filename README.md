@@ -31,12 +31,15 @@ function someCtrl($metrika) {
 Для отправки данных о просмотре страницы:
 ```javascript
 app.run(['$rootScope', '$location', '$metrika', function ($rootScope, $location, $metrika) {
+    let path = $location.path();
+
     $rootScope.$on('$routeChangeSuccess', (event, next, current) => {
         if (!current || !next || !current.$$route || !next.$$route) return;
 
-        $metrika.hit(next.$$route.originalPath, {
-            referer: current.$$route.originalPath
+        $metrika.hit($location.path(), {
+            referer: path
         });
+        path = $location.path();
     });
 }])
 ```
