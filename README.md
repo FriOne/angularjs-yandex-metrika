@@ -28,3 +28,15 @@ function someCtrl($metrika) {
     $metrika.fireEvent('some_event_name');
 }
 ```
+Для отправки данных о просмотре страницы:
+```javascript
+app.run(['$rootScope', '$location', '$metrika', function ($rootScope, $location, $metrika) {
+    $rootScope.$on('$routeChangeSuccess', (event, next, current) => {
+        if (!current || !next || !current.$$route || !next.$$route) return;
+
+        $metrika.hit(next.$$route.originalPath, {
+            referer: current.$$route.originalPath
+        });
+    });
+}])
+```
