@@ -11,7 +11,7 @@ CommonJS:
 ```javascript
     var app = module('somApp', ['yandex-metrika']);
 ```
-Если вам нужено, чтобы счетчик работал без javascript, нужно добавить это:
+Если вам нужно, чтобы счетчик работал без javascript, нужно добавить это:
 ```html
 <noscript><div><img src="https://mc.yandex.ru/watch/put_your_id_here" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
 ```
