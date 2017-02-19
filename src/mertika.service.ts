@@ -28,18 +28,7 @@ const DEFAULT_CONFIG = {
   ut: 'noindex'
 };
 
-export class MetrikaBase {
-
-  fireEvent(type: string) {
-    console.warn(`'[${type}] You should provide counter id to use Yandex metrika events'`);
-  }
-
-  hit(url: string, options: HitOptions) {
-    console.warn(`'[${url}] You should provide counter id to use Yandex metrika events'`);
-  }
-}
-
-export class Metrika extends MetrikaBase {
+export class Metrika {
   static counterConfig: YandexCounterConfig = DEFAULT_CONFIG;
 
   static insertMetrika() {
@@ -76,6 +65,10 @@ export class Metrika extends MetrikaBase {
   }
 
   fireEvent(type: string) {
+    if (!Metrika.counterConfig.id) {
+      console.warn(`'[${type}] You should provide counter id to use Yandex metrika events'`);
+      return;
+    }
     if (window[Metrika.counterName] && window[Metrika.counterName].reachGoal) {
       window[Metrika.counterName].reachGoal(type);
     }
@@ -85,6 +78,10 @@ export class Metrika extends MetrikaBase {
   }
 
   hit(url: string, options: HitOptions) {
+    if (!Metrika.counterConfig.id) {
+      console.warn(`'[${url}] You should provide counter id to use Yandex metrika events'`);
+      return;
+    }
     if (window[Metrika.counterName] && window[Metrika.counterName].reachGoal) {
       window[Metrika.counterName].hit(url, options);
     }
