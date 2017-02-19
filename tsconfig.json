@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "moduleResolution": "node",
+    "module": "commonjs",
+    "target": "es5",
+    "lib": [
+      "es6",
+      "dom"
+    ],
+    "allowSyntheticDefaultImports": true,
+    "outDir": "dist",
+    "outFile": "bytes-validator",
+    "declaration": true,
+    "sourceMap": true,
+    "stripInternal": true
+  },
+  "files": [
+    "src/index.ts"
+  ]
+}

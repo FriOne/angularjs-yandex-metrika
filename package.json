@@ -1,8 +1,8 @@
 {
   "name": "angularjs-yandex-metrika",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Yandex Metrika service for angularjs",
-  "main": "./dist/metrika.js",
+  "main": "./dist/metrika.min.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/FriOne/angularjs-yandex-metrika.git"
@@ -20,7 +20,12 @@
   },
   "homepage": "https://github.com/FriOne/angularjs-yandex-metrika#readme",
   "devDependencies": {
-    "gulp": "^3.9.0",
-    "gulp-uglify": "^1.5.2"
+    "@types/angular": "1.x",
+    "angular": "1.x",
+    "awesome-typescript-loader": "3.0.4",
+    "declaration-bundler-webpack-plugin": "^1.0.3",
+    "typescript": "2.1.6",
+    "webpack": "2.x",
+    "webpack-dev-server": "2.x"
   }
 }
