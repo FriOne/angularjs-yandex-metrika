@@ -1,6 +1,6 @@
 {
   "name": "angularjs-yandex-metrika",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Yandex Metrika service for angularjs",
   "main": "./dist/metrika.min.js",
   "repository": {
@@ -14,7 +14,7 @@
     "angularjs"
   ],
   "author": "Lyubimov Roman",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/FriOne/angularjs-yandex-metrika/issues"
   },
