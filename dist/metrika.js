@@ -94,6 +94,11 @@ exports.ng = (ng_from_import && ng_from_import.module) ? ng_from_import : ng_fro
 
 "use strict";
 
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
 var ya_1 = __webpack_require__(3);
 var DEFAULT_CONFIG = {
     id: null,
@@ -104,8 +109,22 @@ var DEFAULT_CONFIG = {
     trackHash: true,
     ut: 'noindex'
 };
-var Metrika = (function () {
+var MetrikaBase = (function () {
+    function MetrikaBase() {
+    }
+    MetrikaBase.prototype.fireEvent = function (type) {
+        console.warn("'[" + type + "] You should provide counter id to use Yandex metrika events'");
+    };
+    MetrikaBase.prototype.hit = function (url, options) {
+        console.warn("'[" + url + "] You should provide counter id to use Yandex metrika events'");
+    };
+    return MetrikaBase;
+}());
+exports.MetrikaBase = MetrikaBase;
+var Metrika = (function (_super) {
+    __extends(Metrika, _super);
     function Metrika() {
+        return _super !== null && _super.apply(this, arguments) || this;
     }
     Metrika.insertMetrika = function () {
         if (!Metrika.counterConfig.id) {
@@ -156,7 +175,7 @@ var Metrika = (function () {
         }
     };
     return Metrika;
-}());
+}(MetrikaBase));
 Metrika.counterConfig = DEFAULT_CONFIG;
 exports.Metrika = Metrika;
 

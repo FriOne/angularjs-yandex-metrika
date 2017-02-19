@@ -10,6 +10,14 @@ export interface YandexCounterConfig {
   ut?: string;
 }
 
+export interface HitOptions {
+  callback?: any;
+  ctx?: any;
+  params?: any;
+  referer: string;
+  title?: string;
+}
+
 const DEFAULT_CONFIG = {
   id: null,
   clickmap: true,
@@ -20,7 +28,18 @@ const DEFAULT_CONFIG = {
   ut: 'noindex'
 };
 
-export class Metrika {
+export class MetrikaBase {
+
+  fireEvent(type: string) {
+    console.warn(`'[${type}] You should provide counter id to use Yandex metrika events'`);
+  }
+
+  hit(url: string, options: HitOptions) {
+    console.warn(`'[${url}] You should provide counter id to use Yandex metrika events'`);
+  }
+}
+
+export class Metrika extends MetrikaBase {
   static counterConfig: YandexCounterConfig = DEFAULT_CONFIG;
 
   static insertMetrika() {
@@ -56,7 +75,7 @@ export class Metrika {
     return 'yaCounter' + Metrika.counterConfig.id;
   }
 
-  fireEvent(type) {
+  fireEvent(type: string) {
     if (window[Metrika.counterName] && window[Metrika.counterName].reachGoal) {
       window[Metrika.counterName].reachGoal(type);
     }
@@ -65,7 +84,7 @@ export class Metrika {
     }
   }
 
-  hit(url, options) {
+  hit(url: string, options: HitOptions) {
     if (window[Metrika.counterName] && window[Metrika.counterName].reachGoal) {
       window[Metrika.counterName].hit(url, options);
     }
