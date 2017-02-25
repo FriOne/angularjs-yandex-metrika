@@ -7,6 +7,6 @@ import { Metrika } from './mertika.service';
 
 const module = angular.module('yandex-metrika', []);
 module.provider('$metrika', MetrikaProvider);
-module.run(['$metrika', () => {
-  Metrika.insertMetrika();
+module.run(['$metrika', ($metrika: Metrika) => {
+  $metrika.insertMetrika();
 }]);

@@ -94,7 +94,10 @@ exports.ng = (ng_from_import && ng_from_import.module) ? ng_from_import : ng_fro
 
 "use strict";
 
-var ya_1 = __webpack_require__(3);
+/** @internal */
+var angular_1 = __webpack_require__(0);
+/** @internal */
+var mertika_service_1 = __webpack_require__(2);
 var DEFAULT_CONFIG = {
     id: null,
     clickmap: true,
@@ -104,19 +107,83 @@ var DEFAULT_CONFIG = {
     trackHash: true,
     ut: 'noindex'
 };
-var Metrika = (function () {
-    function Metrika() {
+var MetrikaProvider = (function () {
+    function MetrikaProvider() {
+        this.counterConfigs = [];
     }
-    Metrika.insertMetrika = function () {
-        if (!Metrika.counterConfig.id) {
-            console.warn('You should provide counter id to use Yandex metrika counter');
+    MetrikaProvider.prototype.configureCounter = function (configs, defaultCounter) {
+        if (!Array.isArray(configs)) {
+            configs = [configs];
+        }
+        if (!defaultCounter) {
+            this.defaultCounterId = configs[0].id;
+        }
+        else if (typeof defaultCounter === 'number' && defaultCounter < configs.length) {
+            this.defaultCounterId = configs[defaultCounter].id;
+        }
+        else {
+            this.defaultCounterId = defaultCounter;
+        }
+        if (!this.defaultCounterId) {
+            console.warn('You provided wrong counter id as a default:', defaultCounter);
             return;
         }
+        var defaultCounterExists = false;
+        var config;
+        for (var i = 0; i < configs.length; i++) {
+            config = configs[i];
+            if (!config.id) {
+                console.warn('You should provide counter id to use Yandex metrika counter', config);
+                continue;
+            }
+            if (config.id === this.defaultCounterId) {
+                defaultCounterExists = true;
+            }
+            this.counterConfigs.push(angular_1.ng.extend({}, DEFAULT_CONFIG, config));
+        }
+        if (!defaultCounterExists) {
+            console.warn('You provided wrong counter id as a default:', defaultCounter);
+        }
+    };
+    MetrikaProvider.prototype.$get = function () {
+        var _this = this;
+        return ['$q', function ($q) { return new mertika_service_1.Metrika($q, _this.counterConfigs, _this.defaultCounterId); }];
+    };
+    return MetrikaProvider;
+}());
+exports.MetrikaProvider = MetrikaProvider;
+
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var ya_1 = __webpack_require__(3);
+var Metrika = (function () {
+    function Metrika($q, counterConfigs, defaultCounterId) {
+        this.$q = $q;
+        this.counterConfigs = counterConfigs;
+        this.defaultCounterId = defaultCounterId;
+        this.positionToId = counterConfigs.map(function (config) { return config.id; });
+    }
+    Metrika.getCounterNameById = function (id) {
+        return 'yaCounter' + id;
+    };
+    Metrika.getCounterById = function (id) {
+        return window[Metrika.getCounterNameById(id)];
+    };
+    Metrika.createCounter = function (config) {
+        window[Metrika.getCounterNameById(config.id)] = new ya_1.ya.Metrika(config);
+    };
+    Metrika.prototype.insertMetrika = function () {
+        var _this = this;
         var name = 'yandex_metrika_callbacks';
         window[name] = window[name] || [];
         window[name].push(function () {
             try {
-                window[Metrika.counterName] = new ya_1.ya.Metrika(Metrika.counterConfig);
+                _this.counterConfigs.map(function (config) { return Metrika.createCounter(config); });
             }
             catch (e) { }
         });
@@ -132,65 +199,129 @@ var Metrika = (function () {
         }
         return name;
     };
-    Object.defineProperty(Metrika, "counterName", {
-        get: function () {
-            return 'yaCounter' + Metrika.counterConfig.id;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Metrika.prototype.fireEvent = function (type) {
-        if (!Metrika.counterConfig.id) {
-            console.warn("'[" + type + "] You should provide counter id to use Yandex metrika events'");
-            return;
-        }
-        if (window[Metrika.counterName] && window[Metrika.counterName].reachGoal) {
-            window[Metrika.counterName].reachGoal(type);
-        }
-        else {
-            console.warn("'Event with type [" + type + "] can't be fired because counter is still loading'");
-        }
+    Metrika.prototype.addFileExtension = function (extensions, counterPosition) {
+        this
+            .counterIsLoaded(counterPosition)
+            .then(function (counter) { return counter.addFileExtension(extensions); })
+            .catch(function () { return console.warn('Counter is still loading'); });
     };
-    Metrika.prototype.hit = function (url, options) {
-        if (!Metrika.counterConfig.id) {
-            console.warn("'[" + url + "] You should provide counter id to use Yandex metrika events'");
-            return;
+    Metrika.prototype.extLink = function (url, options, counterPosition) {
+        var _this = this;
+        if (options === void 0) { options = {}; }
+        return this
+            .counterIsLoaded(counterPosition)
+            .then(function (counter) {
+            var promise = _this.getCallbackPromise(options, url);
+            counter.extLink(url, options);
+            return promise;
+        })
+            .catch(function () { return console.warn('Counter is still loading'); });
+    };
+    Metrika.prototype.file = function (url, options, counterPosition) {
+        var _this = this;
+        if (options === void 0) { options = {}; }
+        return this
+            .counterIsLoaded(counterPosition)
+            .then(function (counter) {
+            var promise = _this.getCallbackPromise(options, url);
+            counter.file(url, options);
+            return promise;
+        })
+            .catch(function () { return console.warn('Counter is still loading'); });
+    };
+    Metrika.prototype.getClientID = function (counterPosition) {
+        var counter = this.getCounterByPosition(counterPosition);
+        if (counter && counter.reachGoal) {
+            return counter.getClientID();
         }
-        if (window[Metrika.counterName] && window[Metrika.counterName].reachGoal) {
-            window[Metrika.counterName].hit(url, options);
+        console.warn('Counter is still loading');
+    };
+    Metrika.prototype.setUserID = function (userId, counterPosition) {
+        this
+            .counterIsLoaded(counterPosition)
+            .then(function (counter) { return counter.setUserID(userId); })
+            .catch(function () { return console.warn('Counter is still loading'); });
+    };
+    Metrika.prototype.userParams = function (params, counterPosition) {
+        this
+            .counterIsLoaded(counterPosition)
+            .then(function (counter) { return counter.userParams(params); })
+            .catch(function () { return console.warn('Counter is still loading'); });
+    };
+    Metrika.prototype.params = function (params, counterPosition) {
+        this
+            .counterIsLoaded(counterPosition)
+            .then(function (counter) { return counter.userParams(params); })
+            .catch(function () { return console.warn('Counter is still loading'); });
+    };
+    Metrika.prototype.replacePhones = function (counterPosition) {
+        this
+            .counterIsLoaded(counterPosition)
+            .then(function (counter) { return counter.replacePhones(); })
+            .catch(function () { return console.warn('Counter is still loading'); });
+    };
+    Metrika.prototype.notBounce = function (options, counterPosition) {
+        var _this = this;
+        if (options === void 0) { options = {}; }
+        return this
+            .counterIsLoaded(counterPosition)
+            .then(function (counter) {
+            var promise = _this.getCallbackPromise(options, options);
+            counter.notBounce(options);
+            return promise;
+        })
+            .catch(function () { return console.warn('Counter is still loading'); });
+    };
+    Metrika.prototype.fireEvent = function (type, options, counterPosition) {
+        var _this = this;
+        if (options === void 0) { options = {}; }
+        return this
+            .counterIsLoaded(counterPosition)
+            .then(function (counter) {
+            var promise = _this.getCallbackPromise(options, type);
+            counter.reachGoal(type, options.params, options.callback, options.ctx);
+            return promise;
+        })
+            .catch(function () { return console.warn("'Event with type [" + type + "] can't be fired because counter is still loading'"); });
+    };
+    Metrika.prototype.hit = function (url, options, counterPosition) {
+        var _this = this;
+        if (options === void 0) { options = {}; }
+        return this
+            .counterIsLoaded(counterPosition)
+            .then(function (counter) {
+            var promise = _this.getCallbackPromise(options, url);
+            counter.hit(url, options);
+            return promise;
+        })
+            .catch(function () { return console.warn("'Hit for page [" + url + "] can't be fired because counter is still loading'"); });
+    };
+    Metrika.prototype.getCallbackPromise = function (options, resolveWith) {
+        var defer = this.$q.defer();
+        var optionsCallback = options.callback;
+        options.callback = function () {
+            optionsCallback && optionsCallback.call(this);
+            defer.resolve(resolveWith);
+        };
+        return defer.promise;
+    };
+    Metrika.prototype.counterIsLoaded = function (counterPosition) {
+        var counter = this.getCounterByPosition(counterPosition);
+        if (counter && counter.reachGoal) {
+            this.$q.resolve(counter);
         }
-        else {
-            console.warn("'Hit for page [" + url + "] can't be fired because counter is still loading'");
-        }
+        return this.$q.reject(counter);
+    };
+    Metrika.prototype.getCounterByPosition = function (counterPosition) {
+        var counterId = this.getCounterIdByPosition(counterPosition);
+        return Metrika.getCounterById(counterId);
+    };
+    Metrika.prototype.getCounterIdByPosition = function (counterPosition) {
+        return (counterPosition === undefined) ? this.defaultCounterId : this.positionToId[counterPosition];
     };
     return Metrika;
 }());
-Metrika.counterConfig = DEFAULT_CONFIG;
 exports.Metrika = Metrika;
-
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/** @internal */
-var angular_1 = __webpack_require__(0);
-/** @internal */
-var mertika_service_1 = __webpack_require__(1);
-var MetrikaProvider = (function () {
-    function MetrikaProvider() {
-    }
-    MetrikaProvider.prototype.configureCounter = function (config) {
-        angular_1.ng.extend(mertika_service_1.Metrika.counterConfig, config);
-    };
-    MetrikaProvider.prototype.$get = function () {
-        return function () { return new mertika_service_1.Metrika(); };
-    };
-    return MetrikaProvider;
-}());
-exports.MetrikaProvider = MetrikaProvider;
 
 
 /***/ }),
@@ -218,12 +349,11 @@ module.exports = __WEBPACK_EXTERNAL_MODULE_4__;
 /** @internal */
 var angular_1 = __webpack_require__(0);
 /** @internal */
-var mertika_provider_1 = __webpack_require__(2);
-var mertika_service_1 = __webpack_require__(1);
+var mertika_provider_1 = __webpack_require__(1);
 var module = angular_1.ng.module('yandex-metrika', []);
 module.provider('$metrika', mertika_provider_1.MetrikaProvider);
-module.run(['$metrika', function () {
-        mertika_service_1.Metrika.insertMetrika();
+module.run(['$metrika', function ($metrika) {
+        $metrika.insertMetrika();
     }]);
 
 

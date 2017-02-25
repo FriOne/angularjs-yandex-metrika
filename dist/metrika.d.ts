@@ -1,4 +1,12 @@
 declare module "metrika" {
+  export class MetrikaProvider implements ng.IServiceProvider {
+    counterConfigs: YandexCounterConfig[];
+    defaultCounterId: number | string;
+    configureCounter(configs: YandexCounterConfig | YandexCounterConfig[], defaultCounter?: number | string): void;
+    $get(): any;
+  }
+
+  /// <reference types="angular" />
   export interface YandexCounterConfig {
     id: string | number;
     clickmap?: boolean;
@@ -8,25 +16,59 @@ declare module "metrika" {
     trackHash?: boolean;
     ut?: string;
   }
-
-  export interface HitOptions {
-    callback?: any;
+  export interface CallbackOptions {
+    callback?: () => any;
     ctx?: any;
+  }
+  export interface CommonOptions extends CallbackOptions {
     params?: any;
-    referer: string;
-    title?: string;
+    title?: any;
   }
-
+  export interface HitOptions extends CommonOptions {
+    referer?: string;
+  }
   export class Metrika {
-    static counterConfig: YandexCounterConfig;
-    static insertMetrika(): string;
-    static readonly counterName: string;
-    fireEvent(type: string): void;
-    hit(url: string, options: HitOptions): void;
-  }
+    $q: ng.IQService;
+    counterConfigs: YandexCounterConfig[];
+    defaultCounterId: number | string;
 
-  export class MetrikaProvider implements ng.IServiceProvider {
-    configureCounter(config: YandexCounterConfig): void;
-    $get(): () => Metrika;
+    static getCounterNameById(id: any): string;
+    static getCounterById(id: any): any;
+    static createCounter(config: YandexCounterConfig): void;
+    private positionToId;
+
+    constructor($q: ng.IQService, counterConfigs: YandexCounterConfig[], defaultCounterId: number | string);
+
+    insertMetrika(): string;
+
+    addFileExtension(extensions: string | string[], counterPosition?: number): void;
+
+    extLink(url: string, options?: CommonOptions, counterPosition?: number): ng.IPromise<any>;
+
+    file(url: string, options?: HitOptions, counterPosition?: number): ng.IPromise<any>;
+
+    getClientID(counterPosition?: number): string;
+
+    setUserID(userId: string, counterPosition?: number): void;
+
+    userParams(params: any, counterPosition?: number): void;
+
+    params(params: any, counterPosition?: number): void;
+
+    replacePhones(counterPosition?: number): void;
+
+    notBounce(options?: CallbackOptions, counterPosition?: number): ng.IPromise<any>;
+
+    fireEvent(type: string, options?: CommonOptions, counterPosition?: number): ng.IPromise<any>;
+
+    hit(url: string, options?: HitOptions, counterPosition?: number): ng.IPromise<any>;
+
+    private getCallbackPromise(options, resolveWith);
+
+    private counterIsLoaded(counterPosition?);
+
+    private getCounterByPosition(counterPosition?);
+
+    private getCounterIdByPosition(counterPosition);
   }
 }
