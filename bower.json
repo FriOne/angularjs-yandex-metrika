@@ -12,7 +12,7 @@
     "angular",
     "angularjs"
   ],
-  "homepage": "https://github.com/GordonDrop/angularjs-yandex-metrika",
+  "homepage": "https://github.com/FriOne/angularjs-yandex-metrika",
   "ignore": [
     "**/.*",
     "node_modules",
