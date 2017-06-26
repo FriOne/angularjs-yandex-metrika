@@ -38,8 +38,9 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.ts$/,
+        test: /.*(?!\.d)\.ts$/,
         loader: 'awesome-typescript-loader',
+        exclude: /node_modules/,
         options: {
           noEmit: true
         }

@@ -1,5 +1,3 @@
-import { ya as Ya } from './ya';
-
 export interface YandexCounterConfig {
   id: string | number;
   clickmap?: boolean;
@@ -62,12 +60,7 @@ export class Metrika {
     s.async = true;
     s.src = 'https://mc.yandex.ru/metrika/watch.js';
 
-    if (typeof window['opera'] === '[object Opera]') {
-      document.addEventListener('DOMContentLoaded', f, false);
-    }
-    else {
-      f();
-    }
+    f();
     return name;
   }
 

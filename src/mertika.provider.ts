@@ -57,7 +57,5 @@ export class MetrikaProvider implements ng.IServiceProvider {
     }
   }
 
-  $get(): any {
-    return ['$q', ($q: ng.IQService) => new Metrika($q, this.counterConfigs, this.defaultCounterId)];
-  }
+  $get = ['$q', ($q: ng.IQService) => new Metrika($q, this.counterConfigs, this.defaultCounterId)];
 }

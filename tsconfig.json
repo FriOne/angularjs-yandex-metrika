@@ -11,12 +11,16 @@
     ],
     "allowSyntheticDefaultImports": true,
     "outDir": "dist",
-    "outFile": "bytes-validator",
+    "outFile": "metrika",
     "declaration": true,
     "sourceMap": true,
     "stripInternal": true
   },
   "files": [
-    "src/index.ts"
+    "src/index.ts",
+    "src/ya.d.ts"
+  ],
+  "exclude": [
+    "node_modules"
   ]
 }

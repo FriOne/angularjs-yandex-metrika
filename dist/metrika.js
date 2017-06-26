@@ -16,9 +16,9 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	function __webpack_require__(moduleId) {
 /******/
 /******/ 		// Check if module is in cache
-/******/ 		if(installedModules[moduleId])
+/******/ 		if(installedModules[moduleId]) {
 /******/ 			return installedModules[moduleId].exports;
-/******/
+/******/ 		}
 /******/ 		// Create a new module (and put it into the cache)
 /******/ 		var module = installedModules[moduleId] = {
 /******/ 			i: moduleId,
@@ -73,7 +73,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 5);
+/******/ 	return __webpack_require__(__webpack_require__.s = 2);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -97,7 +97,7 @@ exports.ng = (ng_from_import && ng_from_import.module) ? ng_from_import : ng_fro
 /** @internal */
 var angular_1 = __webpack_require__(0);
 /** @internal */
-var mertika_service_1 = __webpack_require__(2);
+var mertika_service_1 = __webpack_require__(3);
 var DEFAULT_CONFIG = {
     id: null,
     clickmap: true,
@@ -109,7 +109,9 @@ var DEFAULT_CONFIG = {
 };
 var MetrikaProvider = (function () {
     function MetrikaProvider() {
+        var _this = this;
         this.counterConfigs = [];
+        this.$get = ['$q', function ($q) { return new mertika_service_1.Metrika($q, _this.counterConfigs, _this.defaultCounterId); }];
     }
     MetrikaProvider.prototype.configureCounter = function (configs, defaultCounter) {
         if (!Array.isArray(configs)) {
@@ -145,10 +147,6 @@ var MetrikaProvider = (function () {
             console.warn('You provided wrong counter id as a default:', defaultCounter);
         }
     };
-    MetrikaProvider.prototype.$get = function () {
-        var _this = this;
-        return ['$q', function ($q) { return new mertika_service_1.Metrika($q, _this.counterConfigs, _this.defaultCounterId); }];
-    };
     return MetrikaProvider;
 }());
 exports.MetrikaProvider = MetrikaProvider;
@@ -160,7 +158,23 @@ exports.MetrikaProvider = MetrikaProvider;
 
 "use strict";
 
-var ya_1 = __webpack_require__(3);
+/** @internal */
+var angular_1 = __webpack_require__(0);
+/** @internal */
+var mertika_provider_1 = __webpack_require__(1);
+var module = angular_1.ng.module('yandex-metrika', []);
+module.provider('$metrika', mertika_provider_1.MetrikaProvider);
+module.run(['$metrika', function ($metrika) {
+        $metrika.insertMetrika();
+    }]);
+
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
 var Metrika = (function () {
     function Metrika($q, counterConfigs, defaultCounterId) {
         this.$q = $q;
@@ -175,7 +189,7 @@ var Metrika = (function () {
         return window[Metrika.getCounterNameById(id)];
     };
     Metrika.createCounter = function (config) {
-        window[Metrika.getCounterNameById(config.id)] = new ya_1.ya.Metrika(config);
+        window[Metrika.getCounterNameById(config.id)] = new Ya.Metrika(config);
     };
     Metrika.prototype.insertMetrika = function () {
         var _this = this;
@@ -191,12 +205,7 @@ var Metrika = (function () {
         s.type = 'text/javascript';
         s.async = true;
         s.src = 'https://mc.yandex.ru/metrika/watch.js';
-        if (typeof window['opera'] === '[object Opera]') {
-            document.addEventListener('DOMContentLoaded', f, false);
-        }
-        else {
-            f();
-        }
+        f();
         return name;
     };
     Metrika.prototype.addFileExtension = function (extensions, counterPosition) {
@@ -325,37 +334,10 @@ exports.Metrika = Metrika;
 
 
 /***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/** @internal */
-exports.ya = Ya;
-
-
-/***/ }),
 /* 4 */
 /***/ (function(module, exports) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE_4__;
-
-/***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/** @internal */
-var angular_1 = __webpack_require__(0);
-/** @internal */
-var mertika_provider_1 = __webpack_require__(1);
-var module = angular_1.ng.module('yandex-metrika', []);
-module.provider('$metrika', mertika_provider_1.MetrikaProvider);
-module.run(['$metrika', function ($metrika) {
-        $metrika.insertMetrika();
-    }]);
-
 
 /***/ })
 /******/ ]);
