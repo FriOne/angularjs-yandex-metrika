@@ -176,7 +176,7 @@ export class Metrika {
   private counterIsLoaded(counterPosition?: number): ng.IPromise<any> {
     let counter = this.getCounterByPosition(counterPosition);
     if (counter && counter.reachGoal) {
-      this.$q.resolve(counter);
+      return this.$q.resolve(counter);
     }
     return this.$q.reject(counter);
   }
