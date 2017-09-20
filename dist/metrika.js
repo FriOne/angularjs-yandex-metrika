@@ -317,7 +317,7 @@ var Metrika = (function () {
     Metrika.prototype.counterIsLoaded = function (counterPosition) {
         var counter = this.getCounterByPosition(counterPosition);
         if (counter && counter.reachGoal) {
-            this.$q.resolve(counter);
+            return this.$q.resolve(counter);
         }
         return this.$q.reject(counter);
     };
