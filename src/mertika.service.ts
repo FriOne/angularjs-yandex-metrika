@@ -38,29 +38,35 @@ export class Metrika {
 
   private positionToId: any[];
 
-  constructor(public $q: ng.IQService,
-              public counterConfigs: YandexCounterConfig[],
-              public defaultCounterId: number | string) {
+  constructor(
+    public $q: ng.IQService,
+    public counterConfigs: YandexCounterConfig[],
+    public defaultCounterId: number | string,
+  ) {
     this.positionToId = counterConfigs.map(config => config.id);
   }
 
   insertMetrika() {
-    let name = 'yandex_metrika_callbacks';
+    const name = 'yandex_metrika_callbacks2';
     window[name] = window[name] || [];
-    window[name].push(() => {
+    window[name].push(function() {
       try {
         this.counterConfigs.map(config => Metrika.createCounter(config));
-      } catch(e) {}
+      } catch (e) {}
     });
 
-    let n = document.getElementsByTagName('script')[0],
-      s = document.createElement('script'),
-      f = () => { n.parentNode.insertBefore(s, n); };
+    const n = document.getElementsByTagName('script')[0];
+    const s = document.createElement('script');
     s.type = 'text/javascript';
     s.async = true;
-    s.src = 'https://mc.yandex.ru/metrika/watch.js';
+    s.src = 'https://mc.yandex.ru/metrika/tag.js';
+    const insetScriptTag = () => n.parentNode.insertBefore(s, n);
 
-    f();
+    if ((window as any).opera === '[object Opera]') {
+      document.addEventListener('DOMContentLoaded', insetScriptTag, false);
+    } else {
+      insetScriptTag();
+    }
     return name;
   }
 
@@ -94,7 +100,7 @@ export class Metrika {
   }
 
   getClientID(counterPosition?: number): string {
-    let counter = this.getCounterByPosition(counterPosition);
+    const counter = this.getCounterByPosition(counterPosition);
     if (counter && counter.reachGoal) {
       return counter.getClientID();
     }
@@ -174,7 +180,7 @@ export class Metrika {
   }
 
   private counterIsLoaded(counterPosition?: number): ng.IPromise<any> {
-    let counter = this.getCounterByPosition(counterPosition);
+    const counter = this.getCounterByPosition(counterPosition);
     if (counter && counter.reachGoal) {
       return this.$q.resolve(counter);
     }
@@ -182,7 +188,7 @@ export class Metrika {
   }
 
   private getCounterByPosition(counterPosition?: number) {
-    let counterId = this.getCounterIdByPosition(counterPosition);
+    const counterId = this.getCounterIdByPosition(counterPosition);
     return Metrika.getCounterById(counterId);
   }
 
