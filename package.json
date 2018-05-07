@@ -24,6 +24,7 @@
   "homepage": "https://github.com/FriOne/angularjs-yandex-metrika#readme",
   "devDependencies": {
     "@types/angular": "1.x",
+    "@types/jquery": "^2.0.47",
     "angular": "1.x",
     "awesome-typescript-loader": "3.0.4",
     "declaration-bundler-webpack-plugin": "^1.0.3",
