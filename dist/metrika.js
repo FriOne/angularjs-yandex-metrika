@@ -97,7 +97,7 @@ exports.ng = (ng_from_import && ng_from_import.module) ? ng_from_import : ng_fro
 /** @internal */
 var angular_1 = __webpack_require__(0);
 /** @internal */
-var mertika_service_1 = __webpack_require__(3);
+var metrika_service_1 = __webpack_require__(3);
 var DEFAULT_CONFIG = {
     id: null,
     clickmap: true,
@@ -111,7 +111,7 @@ var MetrikaProvider = (function () {
     function MetrikaProvider() {
         var _this = this;
         this.counterConfigs = [];
-        this.$get = ['$q', function ($q) { return new mertika_service_1.Metrika($q, _this.counterConfigs, _this.defaultCounterId); }];
+        this.$get = ['$q', function ($q) { return new metrika_service_1.Metrika($q, _this.counterConfigs, _this.defaultCounterId); }];
     }
     MetrikaProvider.prototype.configureCounter = function (configs, defaultCounter) {
         if (!Array.isArray(configs)) {
@@ -161,9 +161,9 @@ exports.MetrikaProvider = MetrikaProvider;
 /** @internal */
 var angular_1 = __webpack_require__(0);
 /** @internal */
-var mertika_provider_1 = __webpack_require__(1);
+var metrika_provider_1 = __webpack_require__(1);
 var module = angular_1.ng.module('yandex-metrika', []);
-module.provider('$metrika', mertika_provider_1.MetrikaProvider);
+module.provider('$metrika', metrika_provider_1.MetrikaProvider);
 module.run(['$metrika', function ($metrika) {
         $metrika.insertMetrika();
     }]);
@@ -189,23 +189,30 @@ var Metrika = (function () {
         return window[Metrika.getCounterNameById(id)];
     };
     Metrika.createCounter = function (config) {
-        window[Metrika.getCounterNameById(config.id)] = new Ya.Metrika(config);
+        window[Metrika.getCounterNameById(config.id)] = new Ya.Metrika2(config);
     };
     Metrika.prototype.insertMetrika = function () {
-        var _this = this;
-        var name = 'yandex_metrika_callbacks';
+        var metrika = this;
+        var name = 'yandex_metrika_callbacks2';
         window[name] = window[name] || [];
         window[name].push(function () {
             try {
-                _this.counterConfigs.map(function (config) { return Metrika.createCounter(config); });
+                metrika.counterConfigs.map(function (config) { return Metrika.createCounter(config); });
             }
             catch (e) { }
         });
-        var n = document.getElementsByTagName('script')[0], s = document.createElement('script'), f = function () { n.parentNode.insertBefore(s, n); };
+        var n = document.getElementsByTagName('script')[0];
+        var s = document.createElement('script');
         s.type = 'text/javascript';
         s.async = true;
-        s.src = 'https://mc.yandex.ru/metrika/watch.js';
-        f();
+        s.src = 'https://mc.yandex.ru/metrika/tag.js';
+        var insetScriptTag = function () { return n.parentNode.insertBefore(s, n); };
+        if (window.opera === '[object Opera]') {
+            document.addEventListener('DOMContentLoaded', insetScriptTag, false);
+        }
+        else {
+            insetScriptTag();
+        }
         return name;
     };
     Metrika.prototype.addFileExtension = function (extensions, counterPosition) {

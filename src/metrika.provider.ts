@@ -2,7 +2,7 @@
 import { ng as angular } from './angular';
 
 /** @internal */
-import { Metrika, YandexCounterConfig } from './mertika.service';
+import { Metrika, YandexCounterConfig } from './metrika.service';
 
 const DEFAULT_CONFIG = {
   id: null,
