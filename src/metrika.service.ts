@@ -33,7 +33,7 @@ export class Metrika {
   }
 
   static createCounter(config: YandexCounterConfig) {
-    window[Metrika.getCounterNameById(config.id)] = new Ya.Metrika(config);
+    window[Metrika.getCounterNameById(config.id)] = new Ya.Metrika2(config);
   }
 
   private positionToId: any[];
@@ -47,11 +47,12 @@ export class Metrika {
   }
 
   insertMetrika() {
+    let metrika = this;
     const name = 'yandex_metrika_callbacks2';
     window[name] = window[name] || [];
     window[name].push(function() {
       try {
-        this.counterConfigs.map(config => Metrika.createCounter(config));
+        metrika.counterConfigs.map(config => Metrika.createCounter(config));
       } catch (e) {}
     });
 

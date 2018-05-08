@@ -189,14 +189,15 @@ var Metrika = (function () {
         return window[Metrika.getCounterNameById(id)];
     };
     Metrika.createCounter = function (config) {
-        window[Metrika.getCounterNameById(config.id)] = new Ya.Metrika(config);
+        window[Metrika.getCounterNameById(config.id)] = new Ya.Metrika2(config);
     };
     Metrika.prototype.insertMetrika = function () {
+        var metrika = this;
         var name = 'yandex_metrika_callbacks2';
         window[name] = window[name] || [];
         window[name].push(function () {
             try {
-                this.counterConfigs.map(function (config) { return Metrika.createCounter(config); });
+                metrika.counterConfigs.map(function (config) { return Metrika.createCounter(config); });
             }
             catch (e) { }
         });
